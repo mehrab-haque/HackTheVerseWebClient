@@ -1,21 +1,28 @@
 import React,{useState,useEffect,useRef} from 'react'
 import * as firebase from 'firebase'
 import PropTypes from 'prop-types';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import RotateRightIcon from '@material-ui/icons/RotateRight';
 import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
-import Paper from '@material-ui/core/Paper';
 import { makeStyles, useTheme,TextField } from '@material-ui/core';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
 import Divider from '@material-ui/core/Divider';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+
 import Toolbar from '@material-ui/core/Toolbar';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import MailIcon from '@material-ui/icons/Mail';
 import Drawer from '@material-ui/core/Drawer';
+import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
 import Snackbar from '@material-ui/core/Snackbar';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -29,6 +36,19 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import { deepOrange, deepPurple } from '@material-ui/core/colors';
+
+import YouTube from 'react-youtube';
+import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
+import 'pure-react-carousel/dist/react-carousel.es.css';
+
+const opts = {
+      height: '100%',
+      width: '100%',
+      playerVars: {
+        // https://developers.google.com/youtube/player_parameters
+        autoplay: 1,
+      },
+    };
 
 
 const drawerWidth = 240;
@@ -68,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   menuButton: {
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(0),
     [theme.breakpoints.up('sm')]: {
       display: 'none',
     },
@@ -80,7 +100,8 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(2,1),
+    padding: theme.spacing(1,2),
+    height:'100vh'
   },
   root1:{
     height:'100%'
@@ -107,14 +128,9 @@ const Home=props=>{
   const [uid,setUid]=useState('self')
   const [users,setUsers]=useState(null)
 
-  const [menu,setMenu]=useState(0)
+  const [menu,setMenu]=useState(1)
 
   const problemsListRef=useRef()
-
-  const notify=message=>{
-    setMessage(message)
-    setNotification(true)
-  }
 
 
 
@@ -123,15 +139,7 @@ const Home=props=>{
     setMobileOpen(!mobileOpen);
   };
 
-  const sendCommand=()=>{
-    var command=commandRef.current.value
-    firebase.database().ref().child('command').set(command).then(()=>{
-      notify('command applied')
-    }).catch(err=>{
-      console.log(err)
-      notify('error')
-    })
-  }
+
 
 
 
@@ -140,7 +148,33 @@ const Home=props=>{
         <div className={classes.toolbar} />
           <center>
 
+          <Avatar style={{width:'100px',height:'100px',marginBottom:'20px'}} src={firebase.auth().currentUser.photoURL}>
+            {firebase.auth().currentUser.displayName.substr(0,1)}
+          </Avatar>
+          <h1>
+            {firebase.auth().currentUser.displayName}
+          </h1>
 
+          <Divider style={{marginTop:'20px',marginBottom:'20px'}}/>
+
+          <ListItem selected={menu==1} onClick={()=>{setMenu(1)}} button>
+            <ListItemIcon><InboxIcon /> </ListItemIcon>
+            <ListItemText primary={'Lectures'} />
+          </ListItem>
+
+          <ListItem selected={menu==2} onClick={()=>{setMenu(2)}} button>
+            <ListItemIcon><MailIcon /> </ListItemIcon>
+            <ListItemText primary={'Schedules'} />
+          </ListItem>
+
+          <Button
+            variant='outlined'
+            color='secondary'
+            onClick={()=>{firebase.auth().signOut()}}
+            style={{marginTop:'30px'}}
+            >
+            Logout
+            </Button>
 
           </center>
 
@@ -156,16 +190,7 @@ const Home=props=>{
 
   return (
     <div className={classes.root}>
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        open={notification}
-        onClose={()=>{setNotification(false)}}
-        autoHideDuration={4000}
-        message={message}
-      />
+
       <CssBaseline />
       <AppBar position="fixed" className={classes.appBar}>
         <Toolbar style={{backgroundColor:'#0090ff'}}>
@@ -214,27 +239,154 @@ const Home=props=>{
           </Drawer>
         </Hidden>
       </nav>
-      <main className={classes.content}>
+      <main style={{height:'100vh'}} className={classes.content}>
         <div className={classes.toolbar} />
 
-        <TextField
-          variant='outlined'
-          label='Command'
-          inputRef={commandRef}
-          />
 
-        <Button
-          variant='contained'
-          color='primary'
-          onClick={sendCommand}
-          style={{marginLeft:'10px'}}
-          >
-          Apply
-          </Button>
+          {
+            menu==1?(
+              <Lectures/>
+            ):(
+              menu==2?(
+                <Schedule/>
+              ):(
+                <div/>
+              )
+            )
+          }
 
       </main>
     </div>
   );
+}
+
+const Lectures=props=>{
+
+  const opts = {
+      width: '100%',
+      playerVars: {
+        // https://developers.google.com/youtube/player_parameters
+        autoplay: 1,
+      },
+    };
+
+  return(
+    <div>
+      <h2>
+        Chemistry Lecture 1
+      </h2>
+      <Tabs>
+    <TabList>
+      <Tab>Video 1</Tab>
+      <Tab>Video 2</Tab>
+      <Tab>Video 3</Tab>
+    </TabList>
+
+    <TabPanel>
+      <YouTube videoId="13D0Occ6ulA" opts={opts} />
+    </TabPanel>
+    <TabPanel>
+      <YouTube videoId="WqZw3R2wDho" opts={opts} />
+    </TabPanel>
+    <TabPanel>
+      <YouTube videoId="qDaC9VXnOoE" opts={opts} />
+    </TabPanel>
+  </Tabs>
+    </div>
+  )
+}
+
+const Schedule=props=>{
+
+  const [lectures,setLectures]=useState([])
+  const classes = useStyles();
+  const [control,setControl]=useState(false)
+
+  const [notification,setNotification]=useState(false)
+  const [message,setMessage]=useState('')
+
+  const notify=message=>{
+    setMessage(message)
+    setNotification(true)
+  }
+
+  useEffect(()=>{
+    console.log('hi')
+    firebase.database().ref().child('schedule').on('value', function(snapshot) {
+      var arr=[]
+      Object.keys(snapshot.val()).map(key=>{
+        arr.push(snapshot.val()[key])
+      })
+      setLectures(arr)
+      console.log(arr)
+    });
+  },[])
+
+  const command=string=>{
+    firebase.database().ref().child('command').set(Date.now()+' '+string).then(()=>{
+      notify('command applied')
+    }).catch(err=>{
+      console.log(err)
+      notify('error')
+    })
+  }
+
+  return(
+    <div>
+    <Snackbar
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      open={notification}
+      onClose={()=>{setNotification(false)}}
+      autoHideDuration={4000}
+      message={message}
+    />
+      <Dialog open={control} onClose={()=>{setControl(false)}}>
+        <DialogContent>
+          <RotateLeftIcon onClick={()=>{command('-')}} style={{height:'60px',width:'60px',cursor:'pointer'}}/>
+          <RotateRightIcon onClick={()=>{command('+')}} style={{height:'60px',width:'60px',cursor:'pointer',marginLeft:'10px'}}/>
+        </DialogContent>
+      </Dialog>
+      {
+      lectures.map(lecture=>{
+        return(
+          <Paper style={{marginBottom:'10px',paddingLeft:'20px',paddingTop:'10px',paddingBottom:'10px'}}>
+            <Grid direction='row' container className={classes.grid}>
+              <Grid item xs={8}>
+                <h2>
+                  {lecture.name}
+                </h2>
+                <h4 style={{color:'#888888'}}>
+                  {lecture.time}
+                </h4>
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  onClick={()=>{window.open(lecture.meet,'popUpWindow1', 'height=400,width=400')}}
+                  variant='outlined'
+                  color='primary'
+                  >
+                  Meet
+                </Button><br/>
+                <Button
+                  style={{marginTop:'10px'}}
+                  variant='outlined'
+                  color='primary'
+                  onClick={()=>{setControl(true)}}
+                  >
+                  control
+                </Button>
+
+              </Grid>
+            </Grid>
+
+          </Paper>
+        )
+      })}
+    </div>
+  )
 }
 
 export default Home
