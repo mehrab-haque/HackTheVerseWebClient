@@ -24,7 +24,6 @@ import MailIcon from '@material-ui/icons/Mail';
 import Drawer from '@material-ui/core/Drawer';
 import Paper from '@material-ui/core/Paper';
 import MenuIcon from '@material-ui/icons/Menu';
-import Snackbar from '@material-ui/core/Snackbar';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -151,9 +150,9 @@ const Home=props=>{
           <Avatar style={{width:'100px',height:'100px',marginBottom:'20px'}} src={firebase.auth().currentUser.photoURL}>
             {firebase.auth().currentUser.displayName.substr(0,1)}
           </Avatar>
-          <h1>
+          <h3 style={{color:'#666666'}}>
             {firebase.auth().currentUser.displayName}
-          </h1>
+          </h3>
 
           <Divider style={{marginTop:'20px',marginBottom:'20px'}}/>
 
@@ -188,6 +187,8 @@ const Home=props=>{
 
 
 
+
+
   return (
     <div className={classes.root}>
 
@@ -204,7 +205,7 @@ const Home=props=>{
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            Problem Setter Console
+            Memory Leak LABS
           </Typography>
         </Toolbar>
       </AppBar>
@@ -272,9 +273,9 @@ const Lectures=props=>{
 
   return(
     <div>
-      <h2>
+      <h3 style={{color:'#666666'}}>
         Chemistry Lecture 1
-      </h2>
+      </h3>
       <Tabs>
     <TabList>
       <Tab>Video 1</Tab>
@@ -300,15 +301,8 @@ const Schedule=props=>{
 
   const [lectures,setLectures]=useState([])
   const classes = useStyles();
-  const [control,setControl]=useState(false)
 
-  const [notification,setNotification]=useState(false)
-  const [message,setMessage]=useState('')
 
-  const notify=message=>{
-    setMessage(message)
-    setNotification(true)
-  }
 
   useEffect(()=>{
     console.log('hi')
@@ -322,33 +316,18 @@ const Schedule=props=>{
     });
   },[])
 
-  const command=string=>{
-    firebase.database().ref().child('command').set(Date.now()+' '+string).then(()=>{
-      notify('command applied')
-    }).catch(err=>{
-      console.log(err)
-      notify('error')
-    })
-  }
+
 
   return(
     <div>
-    <Snackbar
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={notification}
-      onClose={()=>{setNotification(false)}}
-      autoHideDuration={4000}
-      message={message}
-    />
-      <Dialog open={control} onClose={()=>{setControl(false)}}>
-        <DialogContent>
-          <RotateLeftIcon onClick={()=>{command('-')}} style={{height:'60px',width:'60px',cursor:'pointer'}}/>
-          <RotateRightIcon onClick={()=>{command('+')}} style={{height:'60px',width:'60px',cursor:'pointer',marginLeft:'10px'}}/>
-        </DialogContent>
-      </Dialog>
+
+      {
+        lectures.length==0?(
+          <LinearProgress/>
+        ):(
+          <div/>
+        )
+      }
       {
       lectures.map(lecture=>{
         return(
@@ -364,17 +343,17 @@ const Schedule=props=>{
               </Grid>
               <Grid item xs={4}>
                 <Button
-                  onClick={()=>{window.open(lecture.meet,'popUpWindow1', 'height=400,width=400')}}
+                  onClick={()=>{window.open(lecture.meet,'Live Lab', 'height=400,width=400,left=0,top=0')}}
                   variant='outlined'
                   color='primary'
                   >
-                  Meet
+                  Join Lab
                 </Button><br/>
                 <Button
                   style={{marginTop:'10px'}}
                   variant='outlined'
                   color='primary'
-                  onClick={()=>{setControl(true)}}
+                    onClick={()=>{window.open('https://command-lab.netlify.app/','Lab View Control', 'height=140,width=260,left=500,top=0')}}
                   >
                   control
                 </Button>

@@ -4,6 +4,7 @@ import * as firebase from 'firebase'
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 import Loader from 'react-loader-spinner'
 import Home from './components/Home'
+import { BrowserRouter, Route, Switch,Link } from 'react-router-dom';
 import { makeStyles,withStyles } from '@material-ui/core/styles';
 import {Dialog,DialogContent,Button} from '@material-ui/core';
 
@@ -65,6 +66,7 @@ const App=props=>{
   if(!loading){
     if(auth)
       return (
+      
         <Home/>
       )
     else {
