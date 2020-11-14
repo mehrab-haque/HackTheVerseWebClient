@@ -264,6 +264,7 @@ const Home=props=>{
 const Lectures=props=>{
 
   const opts = {
+      height:'500px',
       width: '100%',
       playerVars: {
         // https://developers.google.com/youtube/player_parameters
@@ -343,7 +344,7 @@ const Schedule=props=>{
               </Grid>
               <Grid item xs={4}>
                 <Button
-                  onClick={()=>{window.open(lecture.meet,'Live Lab', 'height=400,width=400,left=0,top=0')}}
+                  onClick={()=>{window.open(lecture.meet,'Live Lab', 'height=600,width=600,left=0,top=0')}}
                   variant='outlined'
                   color='primary'
                   >
@@ -353,7 +354,7 @@ const Schedule=props=>{
                   style={{marginTop:'10px'}}
                   variant='outlined'
                   color='primary'
-                    onClick={()=>{window.open('https://command-lab.netlify.app/','Lab View Control', 'height=140,width=260,left=500,top=0')}}
+                    onClick={()=>{window.open('https://command-lab.netlify.app/','Lab View Control', 'height=140,width=260,left=800,top=0')}}
                   >
                   control
                 </Button>
